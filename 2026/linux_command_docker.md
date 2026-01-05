@@ -23,6 +23,25 @@ ln -sf /usr/lib/linux-tools/$(ls /usr/lib/linux-tools/ | head -n 1)/perf /usr/bi
 # 3. 작동 확인
 perf --version
 
+
+# -H: Threads 모드, -b: Batch 모드, -n1: 1회 실행
+top -H -b -n 1
+# top -H -b -n 1 -p $PID | grep $PID -A $COUNT | grep -v 'top -' | grep -v 'Tasks:' | awk '{print $1}')
+#
+# 인터랙티브 모드 (기본값): 터미널 화면을 계속 갱신(Refresh)하며 보여줍니다. 화면 제어 코드(ANSI Escape Sequence)를 사용하여 커서 위치를 옮기고 화면을 덮어쓰기 때문에, 이 결과를 파일로 저장하면 특수 문자가 섞여 깨져 보입니다.
+#
+# 배치 모드 (-b): 화면을 갱신하는 대신, 매 업데이트마다 결과를 **텍스트 스트림(Stream)**으로 계속 쏟아냅니다. 화면 제어 코드를 쓰지 않기 때문에 다른 명령어에 데이터를 넘겨주기에 최적화된 상태가 됩니다.
+
+# 1초 주기로 10번 결과를 기록
+top -b -d 1 -n 10 > top_history.txt
+
+# CPU 사용량이 높은 상위 5줄만 잘라내고 싶을 때 (12 lines)
+top -b -n 1 | head -n 12
+
+# # 현재 가장 바쁜 PID 하나만 가져오기
+echo $(top -b -n 1 | grep -A 1 "PID" | tail -n 1 | awk '{print $1}')
+
+
 # stress-ng를 사용해 CPU에 30초간 부하를 줍니다. (이 작업은 백그라운드에서 실행하거나 다른 터미널에서 접속하세요)
 stress-ng --cpu 2 --timeout 30s &
 
