@@ -1,0 +1,10 @@
+services:
+  redis:
+    image: redis:7-alpine
+  celery_test:
+    build: .
+    volumes:
+      - .:/app
+    privileged: true # strace 사용을 위해 권한 필요
+    depends_on:
+      - redis

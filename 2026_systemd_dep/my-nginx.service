@@ -1,0 +1,14 @@
+[Unit]
+Description=Nginx bound to App
+# my-app이 죽으면 나도 죽는다
+BindsTo=my-app.service
+# my-app이 실행될 때 나도 실행된다
+Wants=my-app.service
+After=my-app.service
+
+[Service]
+ExecStart=/usr/sbin/nginx -g "daemon off;"
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
