@@ -1,0 +1,4 @@
+target: "nginx"
+action: "restart"
+only: "all"
+timestamp: "2026-01-18-09:20" # 실행 시점을 구분하기 위한 값

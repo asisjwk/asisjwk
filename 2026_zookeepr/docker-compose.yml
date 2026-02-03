@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  zookeeper:
+    image: zookeeper:latest
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+
+  server-a:
+    image: python:3.9-slim
+    container_name: server-a
+    hostname: server-a
+    environment:
+      - PYTHONUNBUFFERED=1  # No buffer. Print immediately
+    depends_on: [zookeeper]
+    volumes: ["./agent.py:/agent.py"]
+    command: sh -c "pip install kazoo pyyaml && python /agent.py"
+
+  server-b:
+    image: python:3.9-slim
+    container_name: server-b
+    hostname: server-b
+    environment:
+      - PYTHONUNBUFFERED=1
+    depends_on: [zookeeper]
+    volumes: ["./agent.py:/agent.py"]
+    command: sh -c "pip install kazoo pyyaml && python /agent.py"
