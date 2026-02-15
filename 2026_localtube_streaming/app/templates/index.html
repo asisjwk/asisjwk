@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LocalTube</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>📺 LocalTube</h1>
+      <p>로컬호스트에서 작동하는 YouTube 스타일 스트리밍 MVP</p>
+    </header>
+
+    <main class="layout">
+      <section class="panel">
+        <h2>영상 업로드</h2>
+        <form id="upload-form">
+          <label>제목 <input type="text" name="title" required /></label>
+          <label>설명 <textarea name="description" rows="3"></textarea></label>
+          <label>영상 파일 <input type="file" name="video_file" accept=".mp4,.webm,.mov" required /></label>
+          <button type="submit">업로드</button>
+        </form>
+        <p id="upload-status"></p>
+      </section>
+
+      <section class="panel">
+        <h2>최신 영상</h2>
+        <div class="video-grid">
+          {% for video in videos %}
+          <a class="video-card" href="/watch/{{ video.id }}">
+            <div class="thumb">▶</div>
+            <h3>{{ video.title }}</h3>
+            <p>{{ video.description[:80] }}</p>
+          </a>
+          {% else %}
+          <p>업로드된 영상이 없습니다.</p>
+          {% endfor %}
+        </div>
+      </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.poetry/
+.venv/
+app/uploads/*
+!app/uploads/.gitkeep
