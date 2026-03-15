@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: demo-project
+  namespace: argocd
+spec:
+  description: "ArgoCD v2.14 Demo Project"
+
+  # 소스 리포지토리
+  sourceRepos:
+    - "https://github.com/argoproj/argocd-example-apps.git"
+
+  # 배포 대상 클러스터 및 네임스페이스
+  destinations:
+    - server: "https://kubernetes.default.svc"
+      namespace: "demo"
+    - server: "https://kubernetes.default.svc"
+      namespace: "default"
+
+  # 클러스터 리소스 허용 목록
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+
+  # 네임스페이스 리소스 허용 (전체 허용)
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"

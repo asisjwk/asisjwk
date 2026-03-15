@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: demo-app
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: demo
+spec:
+  project: demo-project
+
+  source:
+    repoURL: "https://github.com/argoproj/argocd-example-apps.git"
+    targetRevision: HEAD
+    path: guestbook
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: demo
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      # ============================================================
+      # [v2.14] ApplyOutOfSyncOnly 사용
+      # v3에서는 이 옵션 사용 시 orphaned resource 발생 가능
+      # ============================================================
+      - ApplyOutOfSyncOnly=true
+
+  # ============================================================
+  # [v2.14] Helm values에 null 포함 가능
+  # v3 + Helm 3.17.1에서는 이것이 에러 발생
+  # ============================================================
+  # source:
+  #   helm:
+  #     values: |
+  #       someFeature: null    ← v3에서 에러
+  #       anotherConfig: null  ← v3에서 에러

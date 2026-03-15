@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-rbac-cm
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: argocd
+data:
+  # ============================================================
+  # [CHANGE 5] RBAC 정책: Fine-Grained 서브리소스 권한 추가
+  # ────────────────────────────────────────────────────────────
+  # WHY: v3에서 update/delete가 서브리소스에 자동 상속되지 않음
+  #      v2.14에서 미리 명시적 서브리소스 권한을 추가해 두면
+  #      v3 전환 시 RBAC 깨짐 방지
+  #
+  # [CHANGE 6] logs 접근 권한 명시적 추가
+  # ────────────────────────────────────────────────────────────
+  # WHY: v3에서 logs RBAC가 강제 적용됨
+  #      명시적 logs 권한이 없으면 로그 조회 불가
+  # ============================================================
+  policy.csv: |
+    # === 개발팀 ===
+    # 기존 앱 레벨 권한 (유지)
+    p, role:developer, applications, get, */*, allow
+    p, role:developer, applications, sync, */*, allow
+    p, role:developer, applications, update, */*, allow
+    p, role:developer, applications, delete, */*, allow
+
+    # [NEW] 서브리소스 명시적 권한 (v3 대비)
+    p, role:developer, applications, update/*, */*, allow      # ← NEW
+    p, role:developer, applications, delete/*/Pod/*/*, */*, allow  # ← NEW (Pod 삭제)
+
+    # [NEW] logs 접근 권한 (v3에서 필수)
+    p, role:developer, logs, get, */*, allow                   # ← NEW
+
+    # === 운영팀 ===
+    p, role:operator, applications, *, */*, allow
+    p, role:operator, clusters, get, *, allow
+    p, role:operator, repositories, *, *, allow
+    p, role:operator, projects, *, *, allow
+
+    # [NEW] 운영팀 서브리소스 + logs 권한
+    p, role:operator, applications, update/*, */*, allow       # ← NEW
+    p, role:operator, applications, delete/*, */*, allow       # ← NEW
+    p, role:operator, logs, get, */*, allow                    # ← NEW
+
+    # === 뷰어 ===
+    p, role:viewer, applications, get, */*, allow
+
+    # [NEW] 뷰어도 logs 접근 가능하도록
+    p, role:viewer, logs, get, */*, allow                      # ← NEW
+
+    # 그룹 바인딩
+    g, my-org:dev-team, role:developer
+    g, my-org:ops-team, role:operator
+    g, my-org:readonly, role:viewer
+
+  policy.default: role:viewer

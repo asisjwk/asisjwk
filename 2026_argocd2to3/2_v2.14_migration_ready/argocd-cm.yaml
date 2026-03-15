@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: argocd
+data:
+  # ============================================================
+  # [CHANGE 1] Resource Tracking: label → annotation 으로 변경
+  # ────────────────────────────────────────────────────────────
+  # WHY: v3에서 기본값이 annotation으로 바뀜
+  #      v2.14에서 미리 전환하여 리소스 추적 방식 안정화
+  # BEFORE: application.resourceTrackingMethod: "label"
+  # AFTER:
+  # ============================================================
+  application.resourceTrackingMethod: "annotation"    # ← CHANGED
+
+  # ============================================================
+  # [CHANGE 2] Repository 설정을 ConfigMap에서 제거
+  # ────────────────────────────────────────────────────────────
+  # WHY: v3에서 ConfigMap 기반 repo 설정이 완전 제거됨
+  #      Secret 방식으로 마이그레이션 필수
+  # BEFORE:
+  #   repositories: |
+  #     - name: demo-repo
+  #       type: git
+  #       url: https://github.com/asisjwk/asisjwk.git
+  # AFTER: → repo-secret.yaml 로 이동 (별도 파일)
+  # ============================================================
+
+  # ============================================================
+  # [CHANGE 3] Resource Exclusions 추가 (v3 기본값 선적용)
+  # ────────────────────────────────────────────────────────────
+  # WHY: v3에서 API 서버 부하 감소를 위해 기본 제외 리소스 추가됨
+  #      미리 적용하여 동작 차이 최소화
+  # BEFORE: (없음)
+  # AFTER:
+  # ============================================================
+  resource.exclusions: |                              # ← NEW
+    - apiGroups:
+      - "*"
+      kinds:
+      - Endpoints
+      - Events
+      - Leases
+      - TokenReviews
+      clusters:
+      - "*"
+
+  # ============================================================
+  # [CHANGE 4] Fine-Grained RBAC 호환 플래그 설정
+  # ────────────────────────────────────────────────────────────
+  # WHY: v3에서 서브리소스 RBAC 상속이 기본 비활성화됨
+  #      전환 기간 동안 v2 동작 유지를 위해 false로 설정
+  #      RBAC 정책 마이그레이션 완료 후 제거 예정
+  # BEFORE: (없음 → 기본 상속)
+  # AFTER:
+  # ============================================================
+  server.rbac.disableApplicationFineGrainedRBACInheritance: "false"  # ← NEW (임시 호환)
+
+  # ============================================================
+  # Dex 설정 (변경 없음 - v3 전환 시 federated_claims 확인 필요)
+  # ============================================================
+  dex.config: |
+    connectors:
+      - type: github
+        id: github
+        name: GitHub
+        config:
+          clientID: $dex-github-client-id
+          clientSecret: $dex-github-client-secret
+          orgs:
+            - name: my-org
