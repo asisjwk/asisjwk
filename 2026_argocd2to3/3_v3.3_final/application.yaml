@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: demo-app
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: demo
+spec:
+  project: demo-project
+
+  source:
+    repoURL: "https://github.com/argoproj/argocd-example-apps.git"
+    targetRevision: HEAD
+    path: guestbook
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: demo
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      # ApplyOutOfSyncOnly 제거됨 (v3에서 orphaned resource 방지)
+
+  ignoreDifferences:
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+      jsonPointers:
+        - /spec/preserveUnknownFields

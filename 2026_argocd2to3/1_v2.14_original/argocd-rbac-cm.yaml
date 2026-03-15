@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-rbac-cm
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: argocd
+data:
+  # ============================================================
+  # [v2.14] RBAC 정책
+  # update/delete 권한이 하위 리소스(Pod, Deployment 등)에 자동 상속됨
+  # → 별도로 서브리소스 권한을 명시하지 않아도 됨
+  # ============================================================
+  policy.csv: |
+    # 개발팀: 앱 update/delete → v2에서는 Pod/Deployment 등 서브리소스에도 자동 적용
+    p, role:developer, applications, get, */*, allow
+    p, role:developer, applications, sync, */*, allow
+    p, role:developer, applications, update, */*, allow
+    p, role:developer, applications, delete, */*, allow
+
+    # 운영팀: 모든 권한
+    p, role:operator, applications, *, */*, allow
+    p, role:operator, clusters, get, *, allow
+    p, role:operator, repositories, *, *, allow
+    p, role:operator, projects, *, *, allow
+
+    # 뷰어: 읽기 전용
+    p, role:viewer, applications, get, */*, allow
+
+    # 그룹 바인딩 (Dex sub claim 기반)
+    g, my-org:dev-team, role:developer
+    g, my-org:ops-team, role:operator
+    g, my-org:readonly, role:viewer
+
+    # [v2.14] logs 권한 없음 → 누구나 로그 접근 가능 (기본 동작)
+
+  policy.default: role:viewer

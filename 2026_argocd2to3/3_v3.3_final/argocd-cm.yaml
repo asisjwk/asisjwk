@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: argocd
+data:
+  # ============================================================
+  # [v3.3] Resource Tracking: annotation 방식 (v3 기본값)
+  # ============================================================
+  application.resourceTrackingMethod: "annotation"
+
+  # ============================================================
+  # [v3.3] Repository → Secret으로 완전 이전 완료
+  # ConfigMap의 repositories 필드는 더 이상 지원되지 않음
+  # → repo-secret.yaml 참조
+  # ============================================================
+
+  # ============================================================
+  # [v3.3] Resource Exclusions (v3 기본값)
+  # ============================================================
+  resource.exclusions: |
+    - apiGroups:
+      - "*"
+      kinds:
+      - Endpoints
+      - Events
+      - Leases
+      - TokenReviews
+      clusters:
+      - "*"
+
+  # ============================================================
+  # [v3.3] Fine-Grained RBAC 호환 플래그 제거
+  # 마이그레이션 완료 후 v3 기본 동작(서브리소스 권한 분리) 사용
+  # → disableApplicationFineGrainedRBACInheritance 설정 제거됨
+  # ============================================================
+
+  # ============================================================
+  # [v3.3] Dex: federated_claims 기반 인증
+  # v2의 sub claim → v3의 federated_claims.user_id
+  # ============================================================
+  dex.config: |
+    connectors:
+      - type: github
+        id: github
+        name: GitHub
+        config:
+          clientID: $dex-github-client-id
+          clientSecret: $dex-github-client-secret
+          orgs:
+            - name: my-org
