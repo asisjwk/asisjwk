@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ video.title }} - LocalTube</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <header><a href="/">← 홈으로</a></header>
+    <main class="watch-layout">
+      <section>
+        <video controls autoplay class="player">
+          <source src="/stream/{{ video.id }}" type="video/mp4" />
+        </video>
+        <h1>{{ video.title }}</h1>
+        <p>{{ video.description }}</p>
+      </section>
+
+      <aside>
+        <h3>추천 영상</h3>
+        {% for item in recommendations %}
+        <a class="video-card compact" href="/watch/{{ item.id }}">
+          <div class="thumb">▶</div>
+          <div>
+            <strong>{{ item.title }}</strong>
+            <p>{{ item.description[:60] }}</p>
+          </div>
+        </a>
+        {% else %}
+        <p>추천할 영상이 없습니다.</p>
+        {% endfor %}
+      </aside>
+    </main>
+  </body>
+</html>

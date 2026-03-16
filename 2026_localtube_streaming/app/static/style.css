@@ -1,0 +1,97 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0f0f0f;
+  color: #f5f5f5;
+}
+
+header {
+  padding: 1rem 1.2rem;
+  background: #1b1b1b;
+  border-bottom: 1px solid #333;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.panel {
+  background: #1a1a1a;
+  border: 1px solid #2d2d2d;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+form {
+  display: grid;
+  gap: 0.6rem;
+}
+
+input,
+textarea,
+button {
+  width: 100%;
+  padding: 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background: #121212;
+  color: #fff;
+}
+
+button {
+  background: #ff3333;
+  border: none;
+  cursor: pointer;
+}
+
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.8rem;
+}
+
+.video-card {
+  text-decoration: none;
+  color: inherit;
+  background: #111;
+  border: 1px solid #2f2f2f;
+  border-radius: 8px;
+  padding: 0.6rem;
+}
+
+.thumb {
+  height: 90px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(120deg, #2b2b2b, #1d1d1d);
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+
+.watch-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.player {
+  width: 100%;
+  max-height: 70vh;
+  background: black;
+}
+
+.compact {
+  display: flex;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+
+.compact .thumb {
+  width: 120px;
+  height: 70px;
+  margin: 0;
+}
